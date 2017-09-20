@@ -3,7 +3,7 @@
     "name": "MAKE FIREFOX TRY AGAIN",
     "version": "1.0",
 
-    "description": "If loading a page fails, try again after x seconds. The reload bypasses the browser cache. This Add-on was inspired by the sadly discontinued Add-on TryAgain, but is in no way connected to it or its authors. Feel free to view and change the source code on: ",
+    "description": "If loading a page fails, try again after x seconds. The reload bypasses the browser cache. This Add-on was inspired by the sadly discontinued Add-on TryAgain, but is in no way affiliated to it or its authors. Feel free to view and change the source code on: https://github.com/ryhaberecht/MAKE-FIREFOX-TRY-AGAIN",
 
     "permissions": [
         "webRequest", "<all_urls>", "tabs", "storage"
