@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "MAKE A MERRY TRY AGAIN",
-    "version": "1.3",
+    "version": "1.4",
 
     "description": "If loading a page fails, try again after x seconds. The reload bypasses the browser cache. This add-on was inspired by the sadly discontinued add-on TryAgain, but is in no way affiliated to it or its authors. The icon comes with friendly permission from Gabe Ferreira's poopontrump.com and all rights remain with him. Feel free to view and change the source code on: https://github.com/ryhaberecht/MAKE-A-MERRY-TRY-AGAIN",
 

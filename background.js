@@ -1,7 +1,10 @@
-browser.webRequest.onErrorOccurred.addListener(
-    tryAgain,
-    {urls: ["<all_urls>"]}
-);
+if (browser.webRequest.onErrorOccurred.hasListener(tryAgain) == false ) {
+        
+    browser.webRequest.onErrorOccurred.addListener(
+        tryAgain,
+        {urls: ["<all_urls>"]}
+    );
+}
 
 var timeoutIds = [];
 
@@ -17,13 +20,13 @@ function tryAgain(requestDetails)
             }
         }
         
-        console.log(`[MFTA] failed: ${requestDetails.url}`);
+        console.log(`[MMTA] failed: ${requestDetails.url}`);
         
         var gettingItem = browser.storage.local.get('timeout');
         gettingItem.then((res) => {
             
             var timeout = res.timeout || 60;
-            console.log("[MFTA] timeout = " + timeout);
+            console.log("[MMTA] timeout = " + timeout);
             
             timeoutIds[requestDetails.tabId] = setTimeout(reload, timeout * 1000, requestDetails.tabId);
         }, onError);
@@ -32,7 +35,7 @@ function tryAgain(requestDetails)
 
 function reload(tabId)
 {
-    console.log("[MFTA] reloading");
+    console.log("[MMTA] reloading");
     
     if (timeoutIds != null && timeoutIds != undefined) {
         
@@ -49,16 +52,24 @@ function reload(tabId)
     }
     else {
         
-        console.log("[MFTA] Error: tabId does not exist or is invalid");
+        console.log("[MMTA] Error: tabId does not exist or is invalid");
     }
 }
 
 function onReloaded()
 {
-    console.log(`[MFTA] Reloaded`);
+    console.log(`[MMTA] Reloaded`);
 }
 
 function onError(error)
 {
-    console.log(`[MFTA] ${error}`);
+    console.log(`[MMTA] ${error}`);
+    
+    if (browser.webRequest.onErrorOccurred.hasListener(tryAgain) == false ) {
+        
+        browser.webRequest.onErrorOccurred.addListener(
+            tryAgain,
+            {urls: ["<all_urls>"]}
+        );
+    }
 }
