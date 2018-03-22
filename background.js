@@ -1,13 +1,5 @@
-if (browser.webRequest.onErrorOccurred.hasListener(tryAgain) == false ) {
-        
-    browser.webRequest.onErrorOccurred.addListener(
-        tryAgain,
-        {urls: ["<all_urls>"],
-        types: ["main_frame"]}
-    );
-}
-
 var timeoutIds = [];
+var navigationDomains = {};
 var errorsToReactUpon = {};
 errorsToReactUpon["NS_ERROR_MALFORMED_URI"] = true;
 errorsToReactUpon["NS_ERROR_CONNECTION_REFUSED"] = true;
@@ -36,14 +28,46 @@ errorsToReactUpon["NS_ERROR_NET_ON_RESPONSE_HEADER"] = true;
 errorsToReactUpon["NS_ERROR_NET_ON_RESPONSE_COMPLETE"] = true;
 errorsToReactUpon["NS_ERROR_NET_ON_TRANSACTION_CLOSE"] = true;
 
-function tryAgain(requestDetails)
+registerNavigationErrorListener();
+registerRequestErrorListener();
+
+function registerRequestErrorListener()
+{
+    var requestFilter = {urls: ["<all_urls>"], types: ["main_frame"]};
+
+    if (browser.webRequest.onErrorOccurred.hasListener(requestErrorOccurred) == false ) {
+
+        browser.webRequest.onErrorOccurred.addListener(
+            requestErrorOccurred,
+            requestFilter
+        );
+    }
+}
+
+function registerNavigationErrorListener()
+{
+    var navigationFilter = {url: [{}]};
+
+    if (browser.webNavigation.onErrorOccurred.hasListener(navigationErrorOccurred) == false ) {
+
+        browser.webNavigation.onErrorOccurred.addListener(
+            navigationErrorOccurred, 
+            navigationFilter
+        );
+    }
+}
+
+function requestErrorOccurred(requestDetails)
 {    
     if (requestDetails !== null && requestDetails !== undefined) {
         
-        if (errorsToReactUpon[requestDetails.error] === true) {
-            
+        var navigationDomain = navigationDomains[requestDetails.tabId];
+        var requestDomain = url2domain(requestDetails.url);
+
+        if ((navigationDomain == undefined || navigationDomain == requestDomain) && errorsToReactUpon[requestDetails.error] === true) {
+
             if (timeoutIds != null && timeoutIds != undefined) {
-            
+
                 var timeoutId = timeoutIds[requestDetails.tabId];
                 if (timeoutId != null && timeoutId != undefined) {
                     clearTimeout(timeoutId);
@@ -62,7 +86,7 @@ function tryAgain(requestDetails)
             }, onError);
         }
         else {
-            
+
             console.log(`[MMTA] not reacting upon error code ${requestDetails.error} for URL ${requestDetails.url}`);
         }
     }
@@ -70,7 +94,7 @@ function tryAgain(requestDetails)
 
 function reload(tabId)
 {
-    console.log("[MMTA] reloading");
+    console.log("[MMTA] reloading...");
     
     if (timeoutIds != null && timeoutIds != undefined) {
         
@@ -93,18 +117,28 @@ function reload(tabId)
 
 function onReloaded()
 {
-    console.log(`[MMTA] Reloaded`);
+    console.log(`[MMTA] finished reloading`);
 }
 
 function onError(error)
 {
     console.log(`[MMTA] ${error}`);
     
-    if (browser.webRequest.onErrorOccurred.hasListener(tryAgain) == false ) {
-        
-        browser.webRequest.onErrorOccurred.addListener(
-            tryAgain,
-            {urls: ["<all_urls>"]}
-        );
-    }
+    registerNavigationErrorListener();
+    registerRequestErrorListener();
+}
+
+function url2domain(url)
+{
+    return url.replace(/.+:\/\//,'').split(/[/?#]/)[0];
+}
+
+function navigationErrorOccurred(navigationDetails) {
+    
+    recordNavigationAttempt(navigationDetails);
+}
+
+function recordNavigationAttempt(navigationDetails)
+{
+    navigationDomains[navigationDetails.tabId] = url2domain(navigationDetails.url);
 }
