@@ -63,6 +63,8 @@ function requestErrorOccurred(requestDetails)
         
         var navigationDomain = navigationDomains[requestDetails.tabId];
         var requestDomain = url2domain(requestDetails.url);
+        
+        console.log(`[MMTA] Debug info: navigationDomain = ${navigationDomain} , requestDomain = ${requestDomain}`);
 
         if ((navigationDomain == undefined || navigationDomain == requestDomain) && errorsToReactUpon[requestDetails.error] === true) {
 
