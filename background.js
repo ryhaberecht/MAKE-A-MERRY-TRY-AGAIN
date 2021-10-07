@@ -64,9 +64,9 @@ function requestErrorOccurred(requestDetails)
         var navigationDomain = navigationDomains[requestDetails.tabId];
         var requestDomain = url2domain(requestDetails.url);
         
-        console.log(`[MMTA] Debug info: navigationDomain = ${navigationDomain} , requestDomain = ${requestDomain}`);
+        console.log(`[MMTA] Debug info: navigationDomain = ${navigationDomain} and requestDomain = ${requestDomain}`);
 
-        if ((navigationDomain == undefined || navigationDomain == requestDomain) && errorsToReactUpon[requestDetails.error] === true) {
+        if ((navigationDomain == undefined || navigationDomain == 'about:blank' || navigationDomain == requestDomain) && errorsToReactUpon[requestDetails.error] === true) {
 
             if (timeoutIds != null && timeoutIds != undefined) {
 
